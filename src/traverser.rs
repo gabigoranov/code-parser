@@ -1,6 +1,8 @@
 use std::{fs};
 use std::path::{Path};
 
+use crate::parser::parse_file;
+
 #[derive(Debug)]
 pub enum FileNode {
     File{ name: String },
@@ -19,6 +21,8 @@ pub fn get_children(path: &Path) -> Vec<FileNode> {
 
             if file_path.is_file() {
                 children.push(FileNode::File { name: item_name });
+                let stats = parse_file(file_path.as_path());
+                println!("{}", stats.lines);
             } else {
                 children.push(FileNode::Directory { path: file_path.to_string_lossy().into_owned(), children: (get_children(file_path.as_path())) });
             }
