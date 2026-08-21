@@ -19,18 +19,7 @@ pub enum FileNode {
     Directory(DirectoryData),
 }
 
-// Extract the main .gitignore in the project root dir to not parse hidden items
-pub fn get_gitignore<'a>(root_children: &'a [FileData]) -> Option<gitignore::File<'a>> {
-    for FileData { name, path } in root_children.iter() {
-        if name == ".gitignore" {
-            return gitignore::File::new(path).ok()
-        }
-    }
-
-    None
-}
-
-pub fn get_children(path: &Path) -> Vec<FileNode> {
+pub fn get_children(path: &Path, gitignore_file: &gitignore::File) -> Vec<FileNode> {
     let mut children: Vec<FileNode> = Vec::new();
 
     if let Ok(entries) = fs::read_dir(path) {
@@ -39,6 +28,9 @@ pub fn get_children(path: &Path) -> Vec<FileNode> {
 
             // skip hiden files
             if file_path.starts_with(".") { continue }
+            if let Ok(is_excluded) = gitignore_file.is_excluded(&file_path) && is_excluded {
+                continue
+            }
             
             // Extract the file name as an OsString
             let item_name = entry.file_name().to_string_lossy().into_owned();
@@ -51,7 +43,7 @@ pub fn get_children(path: &Path) -> Vec<FileNode> {
             } else {
                 children.push(FileNode::Directory(DirectoryData {
                     path: file_path.as_path().to_owned(),
-                    children: (get_children(file_path.as_path())),
+                    children: (get_children(file_path.as_path(), gitignore_file)),
                 }));
             }
         }
