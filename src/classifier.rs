@@ -12,8 +12,6 @@ pub struct LanguageInfo {
 pub fn get_tree_sitter_language(path: &Path) -> Option<LanguageInfo> {
     let language_name = detect_language_from_path(&path.to_string_lossy())?;
 
-    println!("{language_name}");
-
     Some(LanguageInfo {
         name: language_name.to_owned(),
         language: get_language(language_name).ok()?,

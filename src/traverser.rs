@@ -1,7 +1,7 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use crate::classifier;
+use crate::{classifier, parser};
 
 #[derive(Debug)]
 pub struct FileData {
@@ -58,6 +58,7 @@ impl<'a> Traverser<'a> {
                             None => continue,
                         };
 
+                        parser::parse_file(&file_path);
                         FileNode::File(FileData {
                             name: file_name,
                             path: file_path,
@@ -65,7 +66,6 @@ impl<'a> Traverser<'a> {
                     },
 
                     false => {
-                        println!("{:?}", self.traverse_path(&file_path));
                         FileNode::Directory(DirectoryData {
                             children: self.traverse_path(&file_path),
                             path: file_path,
