@@ -1,7 +1,5 @@
 use std::{fs, path::Path};
 
-use tree_sitter::{Parser, Tree};
-
 pub struct FileStats {
     pub lines: usize,
 }
@@ -14,22 +12,22 @@ impl FileStats {
     }
 }
 
-pub fn extract_ast(source_code: &String) -> Tree {
-    let mut parser = Parser::new();  
-    parser.set_language(&tree_sitter_rust::LANGUAGE.into()).expect("Error loading Rust grammar");
+// pub fn extract_ast(source_code: &String) -> Tree {
+    // let mut parser = Parser::new();  
+    // parser.set_language(&tree_sitter_rust::LANGUAGE.into()).expect("Error loading Rust grammar");
 
-    let tree = parser.parse(source_code, None).unwrap();
-    let root_node = tree.root_node();
+    // let tree = parser.parse(source_code, None).unwrap();
+    // let root_node = tree.root_node();
 
-    println!("{:?}", tree);
-    tree
-}
+    // println!("{:?}", tree);
+    // tree
+// }
 
 pub fn parse_file(path: &Path) -> FileStats {
     let contents = fs::read_to_string(path)
         .expect("Should have been able to read the file");
 
     print!("{}", path.to_string_lossy());
-    extract_ast(&contents);
+    // extract_ast(&contents);
     FileStats::new(contents.lines().count())
 }
